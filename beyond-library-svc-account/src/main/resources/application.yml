@@ -1,0 +1,22 @@
+server:
+  port: 9080
+  servlet:
+    context-path: /account
+
+spring:
+  application:
+    name: beyond-library-svc-account
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/beyond-library-account?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&serverTimezone=Asia/Shanghai&useSSL=false
+    username: root
+    password: beyond
+  jpa:
+    show-sql: true
+  cloud:
+    nacos:
+      username: nacos
+      password: nacos
+      discovery:
+        ip: 192.168.1.10
+

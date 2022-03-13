@@ -1,0 +1,33 @@
+server:
+  port: 80
+
+spring:
+  application:
+    name: beyond-library-gateway
+  cloud:
+    nacos:
+      username: nacos
+      password: nacos
+      discovery:
+        ip: 192.168.1.10
+    gateway:
+      enabled: true
+      httpclient:
+        connect-timeout: 1000
+        response-timeout: 180s
+      discovery:
+        locator:
+          enabled: false
+          lower-case-service-id: true
+      routes:
+        - id: beyond-library-svc-account
+          uri: lb://beyond-library-svc-account
+          predicates:
+            - Path=/user/1
+
+
+logging:
+  level:
+    root: info
+    org.springframework.cloud.gateway: trace
+

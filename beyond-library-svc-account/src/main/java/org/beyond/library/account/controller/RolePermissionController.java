@@ -1,49 +1,36 @@
 package org.beyond.library.account.controller;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
-import org.beyond.library.account.model.dto.RolePermissionDTO;
-import org.beyond.library.account.model.vo.RolePermissionQueryVO;
-import org.beyond.library.account.model.vo.RolePermissionUpdateVO;
-import org.beyond.library.account.model.vo.RolePermissionVO;
+import org.beyond.library.account.model.param.PermissionCode;
 import org.beyond.library.account.service.RolePermissionService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
+import org.beyond.library.commons.result.Result;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-@Validated
+/**
+ * @author Beyond
+ */
 @RestController
-@RequestMapping("/rolePermission")
+@RequestMapping("/api/roles/{roleCode}/permissions")
 public class RolePermissionController {
 
-    @Autowired
-    private RolePermissionService rolePermissionService;
+    private final RolePermissionService rolePermissionService;
+
+    public RolePermissionController(final RolePermissionService rolePermissionService) {
+        this.rolePermissionService = rolePermissionService;
+    }
 
     @PostMapping
-    public String save(@Valid @RequestBody RolePermissionVO vO) {
-        return rolePermissionService.save(vO).toString();
+    public Result<?> grant(@PathVariable String roleCode,
+                           @Validated @RequestBody PermissionCode params) {
+        rolePermissionService.grant(roleCode, params.getCode());
+        return Result.ok();
     }
 
-    @DeleteMapping("/{id}")
-    public void delete(@Valid @NotNull @PathVariable("id") Integer id) {
-        rolePermissionService.delete(id);
+    @DeleteMapping("/{rolePermissionId}")
+    public Result<?> revoke(@PathVariable String roleCode,
+                            @PathVariable int rolePermissionId) {
+        rolePermissionService.revoke(rolePermissionId);
+        return Result.ok();
     }
 
-    @PutMapping("/{id}")
-    public void update(@Valid @NotNull @PathVariable("id") Integer id,
-                       @Valid @RequestBody RolePermissionUpdateVO vO) {
-        rolePermissionService.update(id, vO);
-    }
-
-    @GetMapping("/{id}")
-    public RolePermissionDTO getById(@Valid @NotNull @PathVariable("id") Integer id) {
-        return rolePermissionService.getById(id);
-    }
-
-    @GetMapping
-    public Page<RolePermissionDTO> query(@Valid RolePermissionQueryVO vO) {
-        return rolePermissionService.query(vO);
-    }
 }

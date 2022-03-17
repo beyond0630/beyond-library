@@ -1,50 +1,36 @@
 package org.beyond.library.account.controller;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
-import org.beyond.library.account.entity.User;
-import org.beyond.library.account.model.dto.UserDTO;
-import org.beyond.library.account.model.vo.UserQueryVO;
-import org.beyond.library.account.model.vo.UserUpdateVO;
-import org.beyond.library.account.model.vo.UserVO;
+import org.beyond.library.account.model.param.SaveUserParams;
 import org.beyond.library.account.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
+import org.beyond.library.commons.annotation.AllowAnonymous;
+import org.beyond.library.commons.model.AuthenticatedUser;
+import org.beyond.library.commons.model.account.UserVO;
+import org.beyond.library.commons.result.Result;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-@Validated
+/**
+ * @author Beyond
+ */
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/users")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
 
+    private final UserService userService;
+
+    public UserController(final UserService userService) { this.userService = userService; }
+
+    @AllowAnonymous
     @PostMapping
-    public String save(@Valid @RequestBody UserVO vO) {
-        return userService.save(vO).toString();
-    }
-
-    @DeleteMapping("/{id}")
-    public void delete(@Valid @NotNull @PathVariable("id") Long id) {
-        userService.delete(id);
-    }
-
-    @PutMapping("/{id}")
-    public void update(@Valid @NotNull @PathVariable("id") Long id,
-                       @Valid @RequestBody UserUpdateVO vO) {
-        userService.update(id, vO);
-    }
-
-    @GetMapping("/{id}")
-    public UserDTO getById(@Valid @NotNull @PathVariable("id") Long id) {
-        return userService.getById(id);
+    public Result<?> saveUser(@Validated @RequestBody SaveUserParams params) {
+        userService.saveUser(params);
+        return Result.ok();
     }
 
     @GetMapping
-    public Page<User> query(UserQueryVO vO) {
-        return userService.query(vO);
+    public Result<UserVO> getUser(AuthenticatedUser user) {
+        return Result.ok(userService.findUser(user.getUserId()));
     }
+
 }

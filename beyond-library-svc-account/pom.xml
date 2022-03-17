@@ -12,6 +12,22 @@
     <artifactId>beyond-library-svc-account</artifactId>
 
     <dependencies>
+
+        <dependency>
+            <groupId>org.beyond</groupId>
+            <artifactId>beyond-library-commons</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.beyond</groupId>
+            <artifactId>beyond-library-framework</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -48,8 +64,18 @@
         </dependency>
 
         <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.ehcache</groupId>
+            <artifactId>ehcache</artifactId>
         </dependency>
 
     </dependencies>

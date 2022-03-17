@@ -1,49 +1,41 @@
 package org.beyond.library.account.controller;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
-import org.beyond.library.account.model.dto.RoleDTO;
-import org.beyond.library.account.model.vo.RoleQueryVO;
-import org.beyond.library.account.model.vo.RoleUpdateVO;
-import org.beyond.library.account.model.vo.RoleVO;
+import org.beyond.library.account.model.param.AddOrUpdateRole;
 import org.beyond.library.account.service.RoleService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
+import org.beyond.library.commons.result.Result;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-@Validated
+/**
+ * @author Beyond
+ */
 @RestController
-@RequestMapping("/role")
+@RequestMapping("/api/roles")
 public class RoleController {
 
-    @Autowired
-    private RoleService roleService;
+    private final RoleService roleService;
+
+    public RoleController(final RoleService roleService) {
+        this.roleService = roleService;
+    }
 
     @PostMapping
-    public String save(@Valid @RequestBody RoleVO vO) {
-        return roleService.save(vO).toString();
+    public Result<?> addRole(@Validated @RequestBody AddOrUpdateRole params) {
+        roleService.saveRole(params);
+        return Result.ok();
     }
 
-    @DeleteMapping("/{id}")
-    public void delete(@Valid @NotNull @PathVariable("id") Integer id) {
-        roleService.delete(id);
+    @PutMapping("/{roleId}")
+    public Result<?> editRole(@PathVariable int roleId,
+                              @Validated @RequestBody AddOrUpdateRole params) {
+        roleService.editRole(roleId, params);
+        return Result.ok();
     }
 
-    @PutMapping("/{id}")
-    public void update(@Valid @NotNull @PathVariable("id") Integer id,
-                       @Valid @RequestBody RoleUpdateVO vO) {
-        roleService.update(id, vO);
+    @DeleteMapping("/{roleId}")
+    public Result<?> deleteRole(@PathVariable int roleId) {
+        roleService.deleteRole(roleId);
+        return Result.ok();
     }
 
-    @GetMapping("/{id}")
-    public RoleDTO getById(@Valid @NotNull @PathVariable("id") Integer id) {
-        return roleService.getById(id);
-    }
-
-    @GetMapping
-    public Page<RoleDTO> query(@Valid RoleQueryVO vO) {
-        return roleService.query(vO);
-    }
 }

@@ -1,49 +1,42 @@
 package org.beyond.library.account.controller;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
-import org.beyond.library.account.model.dto.PermissionDTO;
-import org.beyond.library.account.model.vo.PermissionQueryVO;
-import org.beyond.library.account.model.vo.PermissionUpdateVO;
-import org.beyond.library.account.model.vo.PermissionVO;
+import org.beyond.library.account.model.param.AddOrUpdatePermission;
 import org.beyond.library.account.service.PermissionService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
+import org.beyond.library.commons.result.Result;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-@Validated
+/**
+ * @author Beyond
+ */
 @RestController
-@RequestMapping("/permission")
+@RequestMapping("/api/permissions")
 public class PermissionController {
 
-    @Autowired
-    private PermissionService permissionService;
+    private final PermissionService permissionService;
+
+    public PermissionController(final PermissionService permissionService) {
+        this.permissionService = permissionService;
+    }
 
     @PostMapping
-    public String save(@Valid @RequestBody PermissionVO vO) {
-        return permissionService.save(vO).toString();
+    public Result<?> addPermission(@Validated @RequestBody AddOrUpdatePermission params) {
+        permissionService.savePermission(params);
+        return Result.ok();
     }
 
-    @DeleteMapping("/{id}")
-    public void delete(@Valid @NotNull @PathVariable("id") Integer id) {
-        permissionService.delete(id);
+
+    @PutMapping("/{permissionId}")
+    public Result<?> editPermission(@PathVariable int permissionId,
+                                    @Validated @RequestBody AddOrUpdatePermission params) {
+        permissionService.editPermission(permissionId, params);
+        return Result.ok();
     }
 
-    @PutMapping("/{id}")
-    public void update(@Valid @NotNull @PathVariable("id") Integer id,
-                       @Valid @RequestBody PermissionUpdateVO vO) {
-        permissionService.update(id, vO);
+    @DeleteMapping("/{permissionId}")
+    public Result<?> deletePermission(@PathVariable int permissionId) {
+        permissionService.deletePermission(permissionId);
+        return Result.ok();
     }
 
-    @GetMapping("/{id}")
-    public PermissionDTO getById(@Valid @NotNull @PathVariable("id") Integer id) {
-        return permissionService.getById(id);
-    }
-
-    @GetMapping
-    public Page<PermissionDTO> query(@Valid PermissionQueryVO vO) {
-        return permissionService.query(vO);
-    }
 }

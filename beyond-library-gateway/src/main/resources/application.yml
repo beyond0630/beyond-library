@@ -8,8 +8,8 @@ spring:
     nacos:
       username: nacos
       password: nacos
-      discovery:
-        ip: 192.168.1.10
+    #      discovery:
+    #        ip: 192.168.1.10
     gateway:
       enabled: true
       httpclient:
@@ -23,11 +23,30 @@ spring:
         - id: beyond-library-svc-account
           uri: lb://beyond-library-svc-account
           predicates:
-            - Path=/user/1
+            - Path=/account/**
+          filters:
+            - Authentication
+            - RewritePath=/account/(.*), /api/$\1
 
+
+management:
+  server:
+    port: 81
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+        exclude:
 
 logging:
   level:
     root: info
-    org.springframework.cloud.gateway: trace
-
+feign:
+  client:
+    config:
+      default:
+        connect-timeout: 20000
+        read-timeout: 20000

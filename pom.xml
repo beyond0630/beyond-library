@@ -12,6 +12,8 @@
     <modules>
         <module>beyond-library-gateway</module>
         <module>beyond-library-svc-account</module>
+        <module>beyond-library-commons</module>
+        <module>beyond-library-framework</module>
     </modules>
 
     <properties>
@@ -21,10 +23,26 @@
         <spring.boot.version>2.6.3</spring.boot.version>
         <spirng.cloud.version>2021.0.1</spirng.cloud.version>
         <spring.cloud.alibaba.version>2021.0.1.0</spring.cloud.alibaba.version>
+        <spring.cloud.circuitbreaker.version>2.1.1</spring.cloud.circuitbreaker.version>
+
+        <jwt.version>0.9.1</jwt.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+
+            <dependency>
+                <groupId>org.beyond</groupId>
+                <artifactId>beyond-library-commons</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.beyond</groupId>
+                <artifactId>beyond-library-framework</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
@@ -47,6 +65,12 @@
                 <version>${spring.cloud.alibaba.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt</artifactId>
+                <version>${jwt.version}</version>
             </dependency>
 
         </dependencies>

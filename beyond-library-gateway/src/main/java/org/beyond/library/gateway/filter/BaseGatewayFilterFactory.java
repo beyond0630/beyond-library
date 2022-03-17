@@ -1,0 +1,38 @@
+package org.beyond.library.gateway.filter;
+
+import org.beyond.library.commons.result.Result;
+import org.beyond.library.commons.utils.JsonUtils;
+import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
+import org.springframework.cloud.gateway.support.ServerWebExchangeUtils;
+import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.server.reactive.ServerHttpResponse;
+import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
+
+public abstract class BaseGatewayFilterFactory<C> extends AbstractGatewayFilterFactory<C> {
+
+    Mono<Void> writeObject(final ServerWebExchange exchange,
+                           final HttpStatus httpStatus) {
+        return this.writeObject(exchange, httpStatus,
+            Result.make(String.valueOf(httpStatus.value()), httpStatus.getReasonPhrase(), null));
+    }
+
+    Mono<Void> writeObject(final ServerWebExchange exchange,
+                           final HttpStatus httpStatus,
+                           final Object object) {
+        ServerWebExchangeUtils.setResponseStatus(exchange, httpStatus);
+        ServerHttpResponse response = exchange.getResponse();
+
+        byte[] bytes = JsonUtils.serializeAsBytes(object);
+
+        HttpHeaders headers = response.getHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setContentLength(bytes.length);
+        DataBuffer buffer = response.bufferFactory().wrap(bytes);
+        return response.writeWith(Mono.just(buffer));
+    }
+
+}

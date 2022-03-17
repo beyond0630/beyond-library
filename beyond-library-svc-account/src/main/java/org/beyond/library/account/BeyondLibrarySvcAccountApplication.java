@@ -7,8 +7,8 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 /**
  * @author Beyond
  */
-@SpringBootApplication
 @EnableDiscoveryClient
+@SpringBootApplication(scanBasePackages = { "org.beyond.library.account", "org.beyond.library.framework" })
 public class BeyondLibrarySvcAccountApplication {
 
     public static void main(String[] args) {

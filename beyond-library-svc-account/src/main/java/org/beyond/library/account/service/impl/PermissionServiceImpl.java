@@ -108,9 +108,4 @@ public class PermissionServiceImpl implements PermissionService {
             pattern.toUpperCase(Locale.ROOT));
     }
 
-    public static void main(String[] args) {
-        AntPathMatcher antPathMatcher = new AntPathMatcher();
-        System.out.println(antPathMatcher.match("/api/users/{id}", "/api/users/1"));
-    }
-
 }

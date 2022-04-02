@@ -1,6 +1,6 @@
 package org.beyond.library.account.service.impl;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.beyond.library.account.model.entity.User;
@@ -43,7 +43,7 @@ public class UserServiceImpl implements UserService {
         user.setUsername(params.getUsername());
         user.setPassword(DigestUtils.sha1Hex(params.getPassword()));
         user.setEmail(params.getEmail());
-        user.setRegisterTime(new Date());
+        user.setRegisterTime(LocalDateTime.now());
         user.setCreatedBy(user.getId());
         user.setModifiedBy(user.getId());
         userRepository.save(user);

@@ -11,16 +11,18 @@ SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS `bla_permission`;
 CREATE TABLE `bla_permission`
 (
-    `id`          int                                                           NOT NULL AUTO_INCREMENT COMMENT 'id',
-    `code`        varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NOT NULL COMMENT '权限编码',
-    `name`        varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NULL     DEFAULT NULL COMMENT '权限名称',
-    `url`         varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '访问地址',
-    `is_disabled` bit(1)                                                        NOT NULL DEFAULT b'0' COMMENT '是否禁用',
+    `id`                 int                                                           NOT NULL AUTO_INCREMENT COMMENT 'id',
+    `code`               varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NOT NULL COMMENT '权限编码',
+    `name`               varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NULL     DEFAULT NULL COMMENT '权限名称',
+    `method`             varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '请求方法',
+    `pattern`            varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '访问地址 Pattern',
+    `is_allow_anonymous` bit(1)                                                        NOT NULL DEFAULT b'0' COMMENT '是否允许匿名访问',
+    `is_disabled`        bit(1)                                                        NOT NULL DEFAULT b'0' COMMENT '是否禁用',
     PRIMARY KEY (`id`) USING BTREE,
     UNIQUE INDEX `uk_bla_permission_code` (`code`) USING BTREE,
-    UNIQUE INDEX `uk_bla_permission_url` (`url`) USING BTREE
+    UNIQUE INDEX `uk_bla_permission_url` (`method`, `pattern`) USING BTREE
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 11
+  AUTO_INCREMENT = 15
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_general_ci COMMENT = '权限表'
   ROW_FORMAT = DYNAMIC;
@@ -29,25 +31,31 @@ CREATE TABLE `bla_permission`
 -- Records of bla_permission
 -- ----------------------------
 INSERT INTO `bla_permission`
-VALUES (1, 'ADD_ROLE', '添加角色', 'POST-/api/roles', b'0');
+VALUES (1, 'ADD_ROLE', '添加角色', 'POST', '/api/roles', b'0', b'0');
 INSERT INTO `bla_permission`
-VALUES (2, 'EDIT_ROLE', '编辑角色', 'PUT-/api/roles', b'0');
+VALUES (2, 'EDIT_ROLE', '编辑角色', 'PUT', '/api/roles', b'0', b'0');
 INSERT INTO `bla_permission`
-VALUES (3, 'DELETE_ROLE', '删除角色', 'DELETE-/api/roles', b'0');
+VALUES (3, 'DELETE_ROLE', '删除角色', 'DELETE', '/api/roles', b'0', b'0');
 INSERT INTO `bla_permission`
-VALUES (4, 'ADD_PERMISSION', '添加权限', 'POST-/api/permissions', b'0');
+VALUES (4, 'ADD_PERMISSION', '添加权限', 'POST', '/api/permissions', b'0', b'0');
 INSERT INTO `bla_permission`
-VALUES (5, 'EDIT_PERMISSION', '编辑权限', 'PUT-/api/permissions', b'0');
+VALUES (5, 'EDIT_PERMISSION', '编辑权限', 'PUT', '/api/permissions', b'0', b'0');
 INSERT INTO `bla_permission`
-VALUES (6, 'DELETE_PERMISSION', '删除权限', 'DELETE-/api/permissions', b'0');
+VALUES (6, 'DELETE_PERMISSION', '删除权限', 'DELETE', '/api/permissions', b'0', b'0');
 INSERT INTO `bla_permission`
-VALUES (7, 'ADD_USER_ROLE', '添加用户角色', 'POST-/api/users/{userId}/roles', b'0');
+VALUES (7, 'ADD_USER_ROLE', '添加用户角色', 'POST', '/api/users/{userId}/roles', b'0', b'0');
 INSERT INTO `bla_permission`
-VALUES (8, 'DELETE_USER_ROLE', '删除用户角色', 'DELETE-/api/users/{userId}/roles', b'0');
+VALUES (8, 'DELETE_USER_ROLE', '删除用户角色', 'DELETE', '/api/users/{userId}/roles', b'0', b'0');
 INSERT INTO `bla_permission`
-VALUES (9, 'ADD_ROLE_PERMISSION', '添加角色权限', 'POST-/api/roles/{code}/permissions', b'0');
+VALUES (9, 'ADD_ROLE_PERMISSION', '添加角色权限', 'POST', '/api/roles/{code}/permissions', b'0', b'0');
 INSERT INTO `bla_permission`
-VALUES (10, 'DELETE_ROLE_PERMISSION', '删除角色权限', 'DELETE-/api/roles/{code}/permissions', b'0');
+VALUES (10, 'DELETE_ROLE_PERMISSION', '删除角色权限', 'DELETE', '/api/roles/{code}/permissions', b'0', b'0');
+INSERT INTO `bla_permission`
+VALUES (12, 'ADD_USER', '注册', 'POST', '/api/users', b'1', b'0');
+INSERT INTO `bla_permission`
+VALUES (13, 'LOGIN', '登录', 'POST', '/api/auth', b'1', b'0');
+INSERT INTO `bla_permission`
+VALUES (14, 'GET_USER', '获取用户', 'GET', '/api/users', b'0', b'0');
 
 -- ----------------------------
 -- Table structure for bla_role
@@ -62,7 +70,7 @@ CREATE TABLE `bla_role`
     PRIMARY KEY (`id`) USING BTREE,
     UNIQUE INDEX `uk_bla_role_code` (`code`) USING BTREE
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 1
+  AUTO_INCREMENT = 2
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_general_ci COMMENT = '角色表'
   ROW_FORMAT = DYNAMIC;
@@ -72,6 +80,8 @@ CREATE TABLE `bla_role`
 -- ----------------------------
 INSERT INTO `bla_role`
 VALUES (1, 'ADMIN', '管理员', b'0');
+INSERT INTO `bla_role`
+VALUES (2, 'GENERAL_USER', '普通用户', b'0');
 
 -- ----------------------------
 -- Table structure for bla_role_permission
@@ -89,7 +99,7 @@ CREATE TABLE `bla_role_permission`
     CONSTRAINT `fk_bla_role_permission_bla_permission_1` FOREIGN KEY (`permission_code`) REFERENCES `bla_permission` (`code`) ON DELETE RESTRICT ON UPDATE RESTRICT,
     CONSTRAINT `fk_bla_role_permission_bla_role_1` FOREIGN KEY (`role_code`) REFERENCES `bla_role` (`code`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 10
+  AUTO_INCREMENT = 12
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_general_ci COMMENT = '角色权限表'
   ROW_FORMAT = DYNAMIC;
@@ -117,6 +127,10 @@ INSERT INTO `bla_role_permission`
 VALUES (9, 'ADMIN', 'ADD_ROLE_PERMISSION', b'0');
 INSERT INTO `bla_role_permission`
 VALUES (10, 'ADMIN', 'DELETE_ROLE_PERMISSION', b'0');
+INSERT INTO `bla_role_permission`
+VALUES (11, 'ADMIN', 'GET_USER', b'0');
+INSERT INTO `bla_role_permission`
+VALUES (12, 'GENERAL_USER', 'GET_USER', b'0');
 
 -- ----------------------------
 -- Table structure for bla_user
@@ -143,7 +157,7 @@ CREATE TABLE `bla_user`
   ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
--- Records of bla_user
+-- Records of bla_user ps: 密码与用户名一致
 -- ----------------------------
 INSERT INTO `bla_user`
 VALUES (1, 'admin', 'd033e22ae348aeb5660fc2140aec35850c4da997', 'aaaa@beyond.com', '2021-12-09 17:15:45', b'0', b'0', 1,
@@ -152,6 +166,10 @@ INSERT INTO `bla_user`
 VALUES (918892588088426496, 'beyond', '754159999dd84d5f3ecfd8c45b8c6608476fe944', 'beyond@beyond.com',
         '2021-12-10 15:51:05', b'0', b'0', 918892588088426496, '2021-12-10 15:51:05', 918892588088426496,
         '2021-12-10 15:51:05');
+INSERT INTO `bla_user`
+VALUES (959822481714053120, 'lucifer', 'bfb5bb475a0430398a5bf0e44b4f11ec68264c2f', 'lucifer@123.com',
+        '2022-04-02 14:31:52', b'0', b'0', 959822481714053120, '2022-04-02 14:31:52', 959822481714053120,
+        '2022-04-02 14:31:52');
 
 -- ----------------------------
 -- Table structure for bla_user_role
@@ -169,7 +187,7 @@ CREATE TABLE `bla_user_role`
     CONSTRAINT `fk_bla_user_role_bla_role_1` FOREIGN KEY (`role_code`) REFERENCES `bla_role` (`code`) ON DELETE RESTRICT ON UPDATE RESTRICT,
     CONSTRAINT `fk_bla_user_role_bla_user_1` FOREIGN KEY (`user_id`) REFERENCES `bla_user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 3
+  AUTO_INCREMENT = 4
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_general_ci COMMENT = '用户角色表'
   ROW_FORMAT = DYNAMIC;
@@ -181,5 +199,7 @@ INSERT INTO `bla_user_role`
 VALUES (1, 1, 'ADMIN', b'0');
 INSERT INTO `bla_user_role`
 VALUES (2, 918892588088426496, 'ADMIN', b'0');
+INSERT INTO `bla_user_role`
+VALUES (3, 959822481714053120, 'GENERAL_USER', b'0');
 
 SET FOREIGN_KEY_CHECKS = 1;

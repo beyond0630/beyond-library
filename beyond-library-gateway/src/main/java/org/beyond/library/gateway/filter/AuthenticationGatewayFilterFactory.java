@@ -3,14 +3,17 @@ package org.beyond.library.gateway.filter;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import com.google.common.base.Strings;
 import org.apache.commons.lang3.StringUtils;
 import org.beyond.library.commons.constant.HttpAuthConstants;
 import org.beyond.library.commons.model.AuthenticatedUser;
 import org.beyond.library.commons.model.account.VerifyTokenResult;
-import org.beyond.library.gateway.client.TokenClient;
+import org.beyond.library.gateway.client.account.TokenClient;
 import org.beyond.library.gateway.utils.ApplicationContextUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,8 +32,6 @@ public class AuthenticationGatewayFilterFactory extends BaseGatewayFilterFactory
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthenticationGatewayFilterFactory.class);
 
-
-    ExecutorService executorService = Executors.newFixedThreadPool(1);
 
     public AuthenticationGatewayFilterFactory() {
         LOGGER.info("Loaded GatewayFilterFactory [Authentication]");
@@ -51,6 +52,7 @@ public class AuthenticationGatewayFilterFactory extends BaseGatewayFilterFactory
                 return chain.filter(exchange);
             }
             TokenClient authServiceClient = ApplicationContextUtils.getBean(TokenClient.class);
+            ExecutorService executorService = ApplicationContextUtils.getBean(ExecutorService.class);
             Future<VerifyTokenResult> future = executorService.submit(() -> authServiceClient.verifyToken(token));
             while (!future.isDone()) {
                 try {
@@ -63,7 +65,7 @@ public class AuthenticationGatewayFilterFactory extends BaseGatewayFilterFactory
             try {
                 result = future.get();
             } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
+                LOGGER.error(e.getMessage(), e);
                 return super.writeObject(exchange, HttpStatus.SERVICE_UNAVAILABLE);
             }
             if (!result.isSuccess()) {

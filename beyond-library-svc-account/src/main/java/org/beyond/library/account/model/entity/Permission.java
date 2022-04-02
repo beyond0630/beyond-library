@@ -8,8 +8,6 @@ import org.hibernate.annotations.DynamicUpdate;
 
 /**
  * 权限表
- *
- * @author Beyond
  */
 @Entity
 @Table(name = "bla_permission")
@@ -22,9 +20,9 @@ public class Permission implements Serializable {
     /**
      * id
      */
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     /**
@@ -38,11 +36,24 @@ public class Permission implements Serializable {
      */
     @Column(name = "name")
     private String name;
+
     /**
-     * 访问地址
+     * 请求方法
      */
-    @Column(name = "url", nullable = false)
-    private String url;
+    @Column(name = "method", nullable = false)
+    private String method;
+
+    /**
+     * 访问地址 Pattern
+     */
+    @Column(name = "pattern", nullable = false)
+    private String pattern;
+
+    /**
+     * 是否允许匿名访问
+     */
+    @Column(name = "is_allow_anonymous", nullable = false)
+    private Boolean allowAnonymous;
 
     /**
      * 是否禁用
@@ -93,6 +104,48 @@ public class Permission implements Serializable {
     }
 
     /**
+     * 请求方法
+     */
+    public void setMethod(String method) {
+        this.method = method;
+    }
+
+    /**
+     * 请求方法
+     */
+    public String getMethod() {
+        return method;
+    }
+
+    /**
+     * 访问地址 Pattern
+     */
+    public void setPattern(String pattern) {
+        this.pattern = pattern;
+    }
+
+    /**
+     * 访问地址 Pattern
+     */
+    public String getPattern() {
+        return pattern;
+    }
+
+    /**
+     * 是否允许匿名访问
+     */
+    public void setAllowAnonymous(Boolean allowAnonymous) {
+        this.allowAnonymous = allowAnonymous;
+    }
+
+    /**
+     * 是否允许匿名访问
+     */
+    public Boolean isAllowAnonymous() {
+        return allowAnonymous;
+    }
+
+    /**
      * 是否禁用
      */
     public void setDisabled(Boolean disabled) {
@@ -112,22 +165,11 @@ public class Permission implements Serializable {
             "id=" + id + '\'' +
             "code=" + code + '\'' +
             "name=" + name + '\'' +
+            "method=" + method + '\'' +
+            "pattern=" + pattern + '\'' +
+            "allowAnonymous=" + allowAnonymous + '\'' +
             "disabled=" + disabled + '\'' +
             '}';
-    }
-
-    /**
-     * 访问地址
-     */
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    /**
-     * 访问地址
-     */
-    public String getUrl() {
-        return url;
     }
 
 }

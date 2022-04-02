@@ -1,5 +1,8 @@
 package org.beyond.library.account.biz;
 
+import org.beyond.library.commons.model.AuthenticatedUser;
+import org.beyond.library.commons.model.account.AuthorizationResult;
+
 /**
  * @author Beyond
  */
@@ -7,11 +10,11 @@ public interface AccessManager {
 
     /**
      * 检查用户是有权限
-     *
-     * @param userId        userId
-     * @param permissionUrl 权限 url
-     * @return boolean
+     * @param user 用户
+     * @param method 请求方法
+     * @param url 请求url
+     * @return
      */
-    boolean userHasPermission(long userId, String permissionUrl);
+    AuthorizationResult userHasPermission(AuthenticatedUser user, String method, final String url);
 
 }

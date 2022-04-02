@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.beyond.library.commons.constant.HttpAuthConstants;
 import org.beyond.library.commons.model.AuthenticatedUser;
 import org.springframework.core.MethodParameter;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -27,9 +28,10 @@ public class AuthenticatedUserArgumentResolver implements HandlerMethodArgumentR
             return null;
         }
 
-        Object value = request.getAttribute(HttpAuthConstants.HEADER_X_USER);
-        if (value instanceof AuthenticatedUser) {
-            return value;
+        String userId = request.getHeader(HttpAuthConstants.HEADER_X_USER_ID);
+        String username = request.getHeader(HttpAuthConstants.HEADER_X_USERNAME);
+        if (StringUtils.hasText(userId)) {
+            return new AuthenticatedUser(Long.parseLong(userId), username);
         }
         return null;
     }

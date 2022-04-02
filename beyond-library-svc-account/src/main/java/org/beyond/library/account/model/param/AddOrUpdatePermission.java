@@ -11,7 +11,11 @@ public class AddOrUpdatePermission implements Serializable {
 
     private String name;
 
-    private String url;
+    private String method;
+
+    private String pattern;
+
+    private boolean allowAnonymous;
 
     public String getCode() {
         return code;
@@ -29,12 +33,28 @@ public class AddOrUpdatePermission implements Serializable {
         this.name = name;
     }
 
-    public String getUrl() {
-        return url;
+    public String getMethod() {
+        return method;
     }
 
-    public void setUrl(final String url) {
-        this.url = url;
+    public void setMethod(final String method) {
+        this.method = method;
+    }
+
+    public String getPattern() {
+        return pattern;
+    }
+
+    public void setPattern(final String pattern) {
+        this.pattern = pattern;
+    }
+
+    public boolean isAllowAnonymous() {
+        return allowAnonymous;
+    }
+
+    public void setAllowAnonymous(final boolean allowAnonymous) {
+        this.allowAnonymous = allowAnonymous;
     }
 
 }

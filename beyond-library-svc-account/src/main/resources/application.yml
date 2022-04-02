@@ -15,4 +15,3 @@ spring:
       password: nacos
       discovery:
         server-addr: 172.24.160.1:8848
-        ip: 172.24.160.1

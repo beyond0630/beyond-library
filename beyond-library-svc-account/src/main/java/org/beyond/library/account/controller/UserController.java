@@ -2,7 +2,6 @@ package org.beyond.library.account.controller;
 
 import org.beyond.library.account.model.param.SaveUserParams;
 import org.beyond.library.account.service.UserService;
-import org.beyond.library.commons.annotation.AllowAnonymous;
 import org.beyond.library.commons.model.AuthenticatedUser;
 import org.beyond.library.commons.model.account.UserVO;
 import org.beyond.library.commons.result.Result;
@@ -21,7 +20,6 @@ public class UserController {
 
     public UserController(final UserService userService) { this.userService = userService; }
 
-    @AllowAnonymous
     @PostMapping
     public Result<?> saveUser(@Validated @RequestBody SaveUserParams params) {
         userService.saveUser(params);

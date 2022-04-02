@@ -3,6 +3,7 @@ package org.beyond.library.account.config;
 import java.time.Duration;
 import java.util.Set;
 
+import org.beyond.library.account.model.entity.Permission;
 import org.ehcache.Cache;
 import org.ehcache.CacheManager;
 import org.ehcache.config.builders.CacheConfigurationBuilder;
@@ -22,6 +23,7 @@ public class CacheConfig {
     private static final int MAX_CACHE_ENTRIES = 1000000;
     private static final int EXPIRE_SECONDS = 60 * 60 * 24;
     private static final String USER_ROLE_CACHE_ALIAS = "user_role_cache";
+    private static final String PERMISSION_CACHE_ALIAS = "permission_cache";
     private static final String ROLE_PERMISSION_CACHE_ALIAS = "role_permission_cache";
 
     @Bean
@@ -40,6 +42,11 @@ public class CacheConfig {
                     .withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(Duration.ofSeconds(EXPIRE_SECONDS))).build()
 
             )
+            .withCache(PERMISSION_CACHE_ALIAS,
+                CacheConfigurationBuilder.newCacheConfigurationBuilder(String.class, Permission.class,
+                        ResourcePoolsBuilder.heap(MAX_CACHE_ENTRIES))
+                    .withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(Duration.ofSeconds(EXPIRE_SECONDS))).build()
+            )
             .build(true);
 
     }
@@ -54,6 +61,12 @@ public class CacheConfig {
     @Lazy
     public Cache<String, RolePermissionWrapper> rolePermissionCache(CacheManager cacheManager) {
         return cacheManager.getCache(ROLE_PERMISSION_CACHE_ALIAS, String.class, RolePermissionWrapper.class);
+    }
+
+    @Bean
+    @Lazy
+    public Cache<String, Permission> permissionCache(CacheManager cacheManager) {
+        return cacheManager.getCache(PERMISSION_CACHE_ALIAS, String.class, Permission.class);
     }
 
     public static final class UserRoleWrapper {
@@ -80,7 +93,6 @@ public class CacheConfig {
     public static final class RolePermissionWrapper {
 
         private Set<String> permissions;
-
 
         public RolePermissionWrapper(final Set<String> permissions) {
             this.permissions = permissions;

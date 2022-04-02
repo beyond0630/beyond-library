@@ -39,6 +39,7 @@ public class RoleServiceImpl implements RoleService {
         Role role = new Role();
         role.setCode(params.getCode());
         role.setName(params.getName());
+        role.setDisabled(false);
         roleRepository.save(role);
     }
 

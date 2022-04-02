@@ -1,7 +1,7 @@
 package org.beyond.library.account.model.entity;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -50,7 +50,7 @@ public class User implements Serializable {
      * 注册时间
      */
     @Column(name = "register_time", nullable = false)
-    private Date registerTime;
+    private LocalDateTime registerTime;
 
     /**
      * 是否禁用
@@ -74,7 +74,7 @@ public class User implements Serializable {
      * 创建时间
      */
     @Column(name = "created_at", nullable = false)
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
     /**
      * 更新人
@@ -86,7 +86,7 @@ public class User implements Serializable {
      * 更新时间
      */
     @Column(name = "modified_at", nullable = false)
-    private Date modifiedAt;
+    private LocalDateTime modifiedAt;
 
     /**
      * id
@@ -147,14 +147,14 @@ public class User implements Serializable {
     /**
      * 注册时间
      */
-    public void setRegisterTime(Date registerTime) {
+    public void setRegisterTime(LocalDateTime registerTime) {
         this.registerTime = registerTime;
     }
 
     /**
      * 注册时间
      */
-    public Date getRegisterTime() {
+    public LocalDateTime getRegisterTime() {
         return registerTime;
     }
 
@@ -203,14 +203,14 @@ public class User implements Serializable {
     /**
      * 创建时间
      */
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
     /**
      * 创建时间
      */
-    public Date getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
@@ -231,14 +231,14 @@ public class User implements Serializable {
     /**
      * 更新时间
      */
-    public void setModifiedAt(Date modifiedAt) {
+    public void setModifiedAt(LocalDateTime modifiedAt) {
         this.modifiedAt = modifiedAt;
     }
 
     /**
      * 更新时间
      */
-    public Date getModifiedAt() {
+    public LocalDateTime getModifiedAt() {
         return modifiedAt;
     }
 

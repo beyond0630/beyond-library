@@ -25,8 +25,9 @@ spring:
           predicates:
             - Path=/account/**
           filters:
-            - Authentication
             - RewritePath=/account/(.*), /api/$\1
+            - Authentication
+            - Authorization
 
 
 management:
@@ -35,6 +36,8 @@ management:
   endpoint:
     health:
       show-details: always
+    gateway:
+      enabled: true
   endpoints:
     web:
       exposure:
@@ -45,6 +48,8 @@ logging:
   level:
     root: info
 feign:
+  encoder:
+    charset-from-content-type: true
   client:
     config:
       default:

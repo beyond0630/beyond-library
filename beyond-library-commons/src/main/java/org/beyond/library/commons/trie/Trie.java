@@ -166,27 +166,6 @@ public class Trie {
 
     }
 
-    public static void main(String[] args) {
-        List<String> strings = Arrays.asList("/api/roles",
-            "/api/{xxxxx}/{userId}/roles",
-            "/api/roles",
-            "/api/roles",
-            "/api/permissions",
-            "/api/permissions",
-            "/api/permissions",
-            "/api/users/{userId}/roles",
-            "/api/users/{userId}/roles",
-            "/api/roles/{code}/permissions",
-            "/api/roles/{code}/permissions",
-            "/api/users",
-            "/api/auth",
-            "/api/users");
-        Trie trie = new Trie(strings);
-        System.out.println(trie);
-        String uri = "/api/users/1/roles";
-        System.out.println(trie.parsePattern(uri));
-    }
-
     static class MatchNodeResult {
 
         private final int sort;

@@ -44,6 +44,23 @@ public class Trie {
         }
     }
 
+    public void removePath(final String path) {
+        Assert.hasText(path, () -> "Path can not be blank");
+        if (!path.startsWith(pathSeparator)) {
+            throw new IllegalArgumentException("Invalid path");
+        }
+        String[] split = path.split(this.pathSeparator);
+        TrieNode node = this.root;
+        for (int i = 1; i < split.length - 1; i++) {
+            node = node.getChildrenNode(this.pathSeparator + split[i]);
+            if (node == null) {
+                return;
+            }
+        }
+        node.removeChildren(this.pathSeparator + split[split.length - 1]);
+
+    }
+
     public String parsePattern(final String uri) {
         Assert.hasText(uri, () -> "Uri can not be blank");
         if (!uri.startsWith(pathSeparator)) {
@@ -151,6 +168,16 @@ public class Trie {
             }
             children.add(childrenNode);
             return childrenNode;
+        }
+
+        public void removeChildren(String path) {
+            TrieNode childrenNode = this.getChildrenNode(path);
+            if (childrenNode != null) {
+                this.children.remove(childrenNode);
+                if (CollectionUtils.isEmpty(this.children)) {
+                    this.children = null;
+                }
+            }
         }
 
         private TrieNode getChildrenNode(String path) {

@@ -2,7 +2,6 @@ package org.beyond.library.account.service.impl;
 
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicReference;
-
 import javax.annotation.PostConstruct;
 
 import org.beyond.library.account.model.entity.Permission;
@@ -13,7 +12,6 @@ import org.beyond.library.account.service.PermissionService;
 import org.beyond.library.framework.exception.ApiException;
 import org.beyond.library.framework.exception.DataNotFoundException;
 import org.ehcache.Cache;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.Assert;
@@ -21,16 +19,16 @@ import org.springframework.util.Assert;
 /**
  * @author Beyond
  */
-@Service
-public class PermissionServiceImpl implements PermissionService {
+//@Service
+public class PermissionServiceCacheImpl implements PermissionService {
 
     private final Cache<String, Permission> cache;
     private final PermissionRepository permissionRepository;
     private final RolePermissionRepository rolePermissionRepository;
 
-    public PermissionServiceImpl(final Cache<String, Permission> cache,
-                                 final PermissionRepository permissionRepository,
-                                 final RolePermissionRepository rolePermissionRepository) {
+    public PermissionServiceCacheImpl(final Cache<String, Permission> cache,
+                                      final PermissionRepository permissionRepository,
+                                      final RolePermissionRepository rolePermissionRepository) {
         this.cache = cache;
         this.permissionRepository = permissionRepository;
         this.rolePermissionRepository = rolePermissionRepository;

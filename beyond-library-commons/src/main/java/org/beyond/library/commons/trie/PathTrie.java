@@ -1,6 +1,7 @@
 package org.beyond.library.commons.trie;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.google.common.base.Objects;
 import org.beyond.library.commons.utils.JsonUtils;
@@ -8,7 +9,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-public class Trie {
+public class PathTrie {
 
     private static final String DEFAULT_PATH_SEPARATOR = "/";
     private static final String GLOBBING_PATH_PREFIX = "{";
@@ -19,14 +20,15 @@ public class Trie {
 
     private final TrieNode root;
 
-    public Trie(final Collection<String> collection) {
+    public PathTrie(final Collection<String> collection) {
         this(DEFAULT_PATH_SEPARATOR, collection);
     }
 
-    public Trie(final String pathSeparator, final Collection<String> collection) {
+    public PathTrie(final String pathSeparator, final Collection<String> collection) {
         Assert.notEmpty(collection, () -> "Collection can not be empty");
         this.pathSeparator = pathSeparator;
         this.root = new TrieNode(pathSeparator);
+        this.root.time.decrementAndGet();
         collection.stream()
             .filter(StringUtils::hasText)
             .forEach(this::addPath);
@@ -38,6 +40,7 @@ public class Trie {
             throw new IllegalArgumentException("Invalid path");
         }
         String[] split = path.split(this.pathSeparator);
+        this.root.time.incrementAndGet();
         TrieNode node = this.root;
         for (int i = 1; i < split.length; i++) {
             node = node.addChildren(this.pathSeparator + split[i]);
@@ -50,12 +53,14 @@ public class Trie {
             throw new IllegalArgumentException("Invalid path");
         }
         String[] split = path.split(this.pathSeparator);
+        this.root.time.decrementAndGet();
         TrieNode node = this.root;
         for (int i = 1; i < split.length - 1; i++) {
             node = node.getChildrenNode(this.pathSeparator + split[i]);
             if (node == null) {
                 return;
             }
+            node.time.decrementAndGet();
         }
         node.removeChildren(this.pathSeparator + split[split.length - 1]);
 
@@ -120,15 +125,22 @@ public class Trie {
 
         private final String path;
 
+        private final AtomicInteger time;
+
         private Set<TrieNode> children;
 
         public TrieNode(final String path) {
             Assert.hasText(path, () -> "Path can not be blank");
             this.path = path;
+            this.time = new AtomicInteger(1);
         }
 
         public String getPath() {
             return path;
+        }
+
+        public AtomicInteger getTime() {
+            return time;
         }
 
         public Set<TrieNode> getChildren() {
@@ -165,6 +177,8 @@ public class Trie {
             TrieNode childrenNode = this.getChildrenNode(path);
             if (childrenNode == null) {
                 childrenNode = new TrieNode(path);
+            } else {
+                childrenNode.time.incrementAndGet();
             }
             children.add(childrenNode);
             return childrenNode;
@@ -173,7 +187,11 @@ public class Trie {
         public void removeChildren(String path) {
             TrieNode childrenNode = this.getChildrenNode(path);
             if (childrenNode != null) {
-                this.children.remove(childrenNode);
+                if (childrenNode.time.get() > 1) {
+                    childrenNode.time.decrementAndGet();
+                } else {
+                    this.children.remove(childrenNode);
+                }
                 if (CollectionUtils.isEmpty(this.children)) {
                     this.children = null;
                 }

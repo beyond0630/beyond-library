@@ -5,8 +5,6 @@ import java.util.concurrent.*;
 import org.beyond.library.commons.result.Result;
 import org.beyond.library.commons.utils.JsonUtils;
 import org.beyond.library.gateway.utils.ApplicationContextUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.cloud.gateway.support.ServerWebExchangeUtils;
 import org.springframework.core.io.buffer.DataBuffer;
@@ -18,8 +16,6 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 public abstract class BaseGatewayFilterFactory<C> extends AbstractGatewayFilterFactory<C> {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(BaseGatewayFilterFactory.class);
 
     Mono<Void> writeObject(final ServerWebExchange exchange,
                            final HttpStatus httpStatus) {

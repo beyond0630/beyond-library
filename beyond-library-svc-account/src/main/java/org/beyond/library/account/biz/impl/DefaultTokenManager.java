@@ -2,10 +2,7 @@ package org.beyond.library.account.biz.impl;
 
 import java.util.Date;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.*;
 import org.beyond.library.account.biz.TokenManager;
 import org.beyond.library.account.option.TokenOptions;
 import org.beyond.library.commons.model.account.VerifyTokenResult;
@@ -46,17 +43,16 @@ public class DefaultTokenManager implements TokenManager {
                 .requireAudience(options.getAudience())
                 .require(CLAIM_APP_ENV, this.options.getEnv())
                 .parseClaimsJws(token);
+        } catch (ExpiredJwtException e) {
+            LOGGER.warn("token[{}] was expired", token);
+            return VerifyTokenResult.of(false, null);
         } catch (JwtException e) {
-            LOGGER.debug(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
             return VerifyTokenResult.of(false, null);
         }
 
         Claims body = jws.getBody();
         Date expiration = body.getExpiration();
-        if (expiration != null && expiration.before(new Date())) {
-            return VerifyTokenResult.of(false, null);
-
-        }
 
         VerifyTokenResult.UserTokenClaims claims = new VerifyTokenResult.UserTokenClaims();
         claims.setUserId(Long.parseLong(body.get(CLAIM_USER_ID, String.class)));

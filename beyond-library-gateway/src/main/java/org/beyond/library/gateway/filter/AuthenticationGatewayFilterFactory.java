@@ -4,9 +4,6 @@ package org.beyond.library.gateway.filter;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 import com.google.common.base.Strings;
 import org.apache.commons.lang3.StringUtils;
@@ -52,38 +49,26 @@ public class AuthenticationGatewayFilterFactory extends BaseGatewayFilterFactory
                 return chain.filter(exchange);
             }
             TokenClient authServiceClient = ApplicationContextUtils.getBean(TokenClient.class);
-            ExecutorService executorService = ApplicationContextUtils.getBean(ExecutorService.class);
-            Future<VerifyTokenResult> future = executorService.submit(() -> authServiceClient.verifyToken(token));
-            while (!future.isDone()) {
-                try {
-                    TimeUnit.MICROSECONDS.sleep(10000);
-                } catch (InterruptedException e) {
-                    return super.writeObject(exchange, HttpStatus.SERVICE_UNAVAILABLE);
-                }
-            }
-            VerifyTokenResult result;
             try {
-                result = future.get();
+                VerifyTokenResult result = super.remoteCall(() -> authServiceClient.verifyToken(token));
+                if (!result.isSuccess()) {
+                    removeHeaders(request);
+                    return chain.filter(exchange);
+                } else {
+                    VerifyTokenResult.UserTokenClaims claims = result.getClaims();
+                    AuthenticatedUser user = new AuthenticatedUser(claims.getUserId(), claims.getUsername());
+                    exchange.getAttributes().putIfAbsent(HttpAuthConstants.HEADER_X_USER, user);
+                    request.mutate()
+                        .headers(httpHeaders -> {
+                            httpHeaders.set(HttpAuthConstants.HEADER_X_USER_ID, Long.toString(user.getUserId()));
+                            httpHeaders.set(HttpAuthConstants.HEADER_X_USERNAME, user.getName());
+                        });
+                }
+                return chain.filter(exchange);
             } catch (InterruptedException | ExecutionException e) {
                 LOGGER.error(e.getMessage(), e);
                 return super.writeObject(exchange, HttpStatus.SERVICE_UNAVAILABLE);
             }
-            if (!result.isSuccess()) {
-                removeHeaders(request);
-                return chain.filter(exchange);
-            } else {
-                VerifyTokenResult.UserTokenClaims claims = result.getClaims();
-                AuthenticatedUser user = new AuthenticatedUser(claims.getUserId(), claims.getUsername());
-                exchange.getAttributes().putIfAbsent(HttpAuthConstants.HEADER_X_USER, user);
-
-                request.mutate()
-                    .headers(httpHeaders -> {
-                        httpHeaders.set(HttpAuthConstants.HEADER_X_USER_ID, Long.toString(user.getUserId()));
-                        httpHeaders.set(HttpAuthConstants.HEADER_X_USERNAME, user.getName());
-                    });
-
-            }
-            return chain.filter(exchange);
         };
     }
 

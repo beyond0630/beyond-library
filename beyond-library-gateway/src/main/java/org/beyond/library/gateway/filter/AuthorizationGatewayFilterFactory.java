@@ -3,7 +3,7 @@ package org.beyond.library.gateway.filter;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutionException;
 
 import org.beyond.library.commons.constant.HttpAuthConstants;
 import org.beyond.library.commons.model.AuthenticatedUser;
@@ -28,9 +28,6 @@ public class AuthorizationGatewayFilterFactory extends BaseGatewayFilterFactory<
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthorizationGatewayFilterFactory.class);
 
-
-    ExecutorService executorService = Executors.newFixedThreadPool(1);
-
     public AuthorizationGatewayFilterFactory() {
         LOGGER.info("Loaded GatewayFilterFactory [Authorization]");
     }
@@ -54,26 +51,16 @@ public class AuthorizationGatewayFilterFactory extends BaseGatewayFilterFactory<
             params.setUser(user);
 
             AccessClient accessClient = ApplicationContextUtils.getBean(AccessClient.class);
-            ExecutorService executorService = ApplicationContextUtils.getBean(ExecutorService.class);
-            Future<AuthorizationResult> future = executorService.submit(() -> accessClient.authorize(params));
-            while (!future.isDone()) {
-                try {
-                    TimeUnit.MICROSECONDS.sleep(10000);
-                } catch (InterruptedException e) {
-                    return super.writeObject(exchange, HttpStatus.SERVICE_UNAVAILABLE);
-                }
-            }
-            AuthorizationResult result;
             try {
-                result = future.get();
+                AuthorizationResult result = super.remoteCall(() -> accessClient.authorize(params));
+                if (!result.isSuccess()) {
+                    return super.writeObject(exchange, HttpStatus.UNAUTHORIZED, result);
+                }
+                return chain.filter(exchange);
             } catch (InterruptedException | ExecutionException e) {
                 LOGGER.error(e.getMessage(), e);
                 return super.writeObject(exchange, HttpStatus.SERVICE_UNAVAILABLE);
             }
-            if (!result.isSuccess()) {
-                return super.writeObject(exchange, HttpStatus.UNAUTHORIZED, result);
-            }
-            return chain.filter(exchange);
         };
     }
 

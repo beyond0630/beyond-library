@@ -29,7 +29,6 @@ spring:
             - Authentication
             - Authorization
 
-
 management:
   server:
     port: 81
@@ -48,6 +47,8 @@ logging:
   level:
     root: info
 feign:
+  circuitbreaker:
+    enabled: true
   encoder:
     charset-from-content-type: true
   client:

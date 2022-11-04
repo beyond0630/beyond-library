@@ -100,7 +100,7 @@ public class PathTrie {
             return new MatchNodeResult(1, node);
         }
         if (node.getPath().startsWith(this.getPathSeparator() + GLOBBING_PATH_PREFIX) && node.getPath().endsWith(GLOBBING_PATH_POSTFIX)) {
-            return new MatchNodeResult(1, node);
+            return new MatchNodeResult(2, node);
         }
         return null;
     }

@@ -1,8 +1,6 @@
 package org.beyond.library.account.service.impl;
 
-import java.util.Set;
-import java.util.stream.Collectors;
-
+import com.beyond.cache.Cache;
 import org.beyond.library.account.config.CacheConfig;
 import org.beyond.library.account.model.entity.Permission;
 import org.beyond.library.account.model.entity.Role;
@@ -12,8 +10,10 @@ import org.beyond.library.account.repository.RolePermissionRepository;
 import org.beyond.library.account.repository.RoleRepository;
 import org.beyond.library.account.service.RolePermissionService;
 import org.beyond.library.framework.exception.ApiException;
-import org.ehcache.Cache;
 import org.springframework.stereotype.Service;
+
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Beyond
@@ -67,7 +67,7 @@ public class RolePermissionServiceImpl implements RolePermissionService {
         rolePermission.setRoleCode(roleCode);
         rolePermission.setPermissionCode(permissionCode);
         rolePermissionRepository.save(rolePermission);
-        cache.remove(roleCode);
+        cache.evict(roleCode);
     }
 
     @Override
@@ -75,7 +75,7 @@ public class RolePermissionServiceImpl implements RolePermissionService {
         rolePermissionRepository.findById(rolePermissionId)
             .ifPresent(x -> {
                 rolePermissionRepository.deleteById(rolePermissionId);
-                cache.remove(x.getRoleCode());
+                cache.evict(x.getRoleCode());
             });
     }
 

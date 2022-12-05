@@ -74,8 +74,8 @@
         </dependency>
 
         <dependency>
-            <groupId>org.ehcache</groupId>
-            <artifactId>ehcache</artifactId>
+            <groupId>com.beyond</groupId>
+            <artifactId>beyond-spring-boot-starter-cache</artifactId>
         </dependency>
 
     </dependencies>

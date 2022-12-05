@@ -1,8 +1,6 @@
 package org.beyond.library.account.service.impl;
 
-import java.util.Set;
-import java.util.stream.Collectors;
-
+import com.beyond.cache.Cache;
 import org.beyond.library.account.config.CacheConfig;
 import org.beyond.library.account.model.entity.Role;
 import org.beyond.library.account.model.entity.User;
@@ -13,8 +11,10 @@ import org.beyond.library.account.repository.UserRoleRepository;
 import org.beyond.library.account.service.UserRoleService;
 import org.beyond.library.framework.exception.ApiException;
 import org.beyond.library.framework.exception.DataNotFoundException;
-import org.ehcache.Cache;
 import org.springframework.stereotype.Service;
+
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Beyond
@@ -55,7 +55,7 @@ public class UserRoleServiceImpl implements UserRoleService {
         userRole.setUserId(user.getId());
         userRole.setRoleCode(roleCode);
         userRoleRepository.save(userRole);
-        cache.remove(userId);
+        cache.evict(userId);
     }
 
     @Override
@@ -63,7 +63,7 @@ public class UserRoleServiceImpl implements UserRoleService {
         userRoleRepository.findById(userRoleId)
             .ifPresent(x -> {
                 userRoleRepository.deleteById(userRoleId);
-                cache.remove(x.getUserId());
+                cache.evict(x.getUserId());
             });
     }
 

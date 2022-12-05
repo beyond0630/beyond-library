@@ -26,6 +26,7 @@
         <spring.cloud.circuitbreaker.version>2.1.1</spring.cloud.circuitbreaker.version>
 
         <jwt.version>0.9.1</jwt.version>
+        <beyond-spring-boot-starter.version>1.0.0</beyond-spring-boot-starter.version>
     </properties>
 
     <dependencyManagement>
@@ -41,6 +42,14 @@
                 <groupId>org.beyond</groupId>
                 <artifactId>beyond-library-framework</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.beyond</groupId>
+                <artifactId>beyond-spring-boot-starter</artifactId>
+                <version>${beyond-spring-boot-starter.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
 
             <dependency>

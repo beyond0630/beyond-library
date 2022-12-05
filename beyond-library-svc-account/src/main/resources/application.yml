@@ -3,13 +3,16 @@ spring:
     name: beyond-library-svc-account
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://172.20.57.241:3306/beyond-library-account?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&serverTimezone=Asia/Shanghai&useSSL=false
+    url: jdbc:mysql://127.0.0.1:3306/beyond-library-account?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&serverTimezone=Asia/Shanghai&useSSL=false
     username: root
-    password: beyond
+    password: lucifer
   cloud:
     nacos:
       username: nacos
       password: nacos
       discovery:
-        server-addr: 172.20.57.241:8848
-        ip: 172.20.57.241
+        server-addr: 127.0.0.1:8848
+        ip: 127.0.0.1
+app:
+  cache:
+    type: caffeine
